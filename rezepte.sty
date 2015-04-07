@@ -1,0 +1,196 @@
+% This is a simple class for notation of recipes
+% 
+% by Gesina Schwalbe
+% 
+% written with LaTeX2e
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{rezepte}[2015/04/02 This is an assistant for recipes]
+
+% Warning concerning chosen class
+\ifx\KOMAscript\relax \PackageWarning{rezepte}{There is no guarantee,
+  that rezepte works within non KOMA classes!}\fi
+
+\RequirePackage{xparse}
+\RequirePackage{tabularx}
+\RequirePackage{booktabs}
+\RequirePackage[colorlinks=true]{hyperref}
+\RequirePackage[pdftex]{insdljs}  % inline javascript with \begin{insDLJS}
+\RequirePackage{ifthen}
+\RequirePackage{calc}
+
+% javascript definitions
+\begin{insDLJS}{jsfile}{Outsourced Javascript}
+  % indicator whether default values are assigned
+  % (see assign_default_values())
+  var assigned=false;
+  
+  
+  % valuation handler:
+  % recalculate ingredient amounts when portions have changed
+  function calculate_values(id,default_portions){
+    if(!assigned){
+      assign_default_values();
+      assigned=true;
+    }
+
+    var cnt=1;
+
+    % new portions value (with . instead of , )
+    var portions=parseFloat(event.value.replace(",","."),10);
+    % check on parsing errors
+    if(!portions){
+      % special case: DEL character within text field (mainly chromium)
+      % --> get input (event.value), 
+      % replace , with .
+      % replace/remove DELs (ascii-char 127), 
+      portions = parseFloat(
+      event.value
+      .replace(",",".")
+      .replace(RegExp(String.fromCharCode(127),'g'),""),10);
+      
+      % now try again:
+      if(!portions){
+        app.alert("Please enter only numbers!! You entered:  "+event.value);
+        return;
+      };
+    };
+    
+    % change values of ingredient fields
+    var tmp_obj=this.getField(id+"ing"+cnt);
+    while(tmp_obj)
+    {
+      tmp_obj.value=ingredient_defaults[id-1][cnt-1]*portions/default_portions;
+      cnt++;
+      tmp_obj=this.getField(id+"ing"+cnt);
+    };
+  };
+
+
+  % default values for ingredient amounts
+  % format: 
+  % ingredient_defaults[<recipe number>-1][<ingredient number>-1]
+  var ingredient_defaults=[];
+
+  % assign the default values to the ingredients
+  % expample: 
+  % input is 200 [g] flour for 4 [Portions]
+  % in the 3rd recipe where flour is the 4th ingredient
+  % --> ingredients[3][4]=200
+  function assign_default_values(){
+    var recipe_cnt=1;
+    var ingredient_cnt=1;
+    var tmp_portion=this.getField(recipe_cnt);
+    var tmp_ingredient=this.getField(recipe_cnt+"ing"+ingredient_cnt);
+    
+    % go through existing portion fields (one per recipe),
+    % that carry the recipe id
+    while(tmp_portion)
+    {
+      ingredient_defaults[recipe_cnt-1]=[];
+      % go through the existing ingredients in the current recipe
+      % with id recipe_cnt
+      while(tmp_ingredient)
+      {
+        % entry
+        ingredient_defaults[recipe_cnt-1][ingredient_cnt-1] = tmp_ingredient.value;
+        % next
+        ingredient_cnt++;
+        tmp_ingredient=this.getField(recipe_cnt+"ing"+ingredient_cnt);
+      };
+      % next
+      recipe_cnt++;
+      ingredient_cnt=1;
+      tmp_portion=this.getField(recipe_cnt);
+      tmp_ingredient=this.getField(recipe_cnt+"ing"+ingredient_cnt);
+    };
+  };
+
+\end{insDLJS}
+
+
+\AtBeginDocument{\begin{Form}}
+\AtEndDocument{\end{Form}}
+
+% counter
+\newcounter{recipes}
+\setcounter{recipes}{0}
+\newcounter{ingredients}[recipes]
+\setcounter{ingredients}{0}
+\newcounter{step}
+\setcounter{step}{0}
+
+% lengths
+\newlength{\amountwidth}
+\setlength{\amountwidth}{1cm}
+\newlength{\unitwidth}
+\setlength{\unitwidth}{1cm}
+\newlength{\descriptionwidth}
+\setlength{\descriptionwidth}{2.5cm}
+\newlength{\ingredienttextskip}
+\setlength{\ingredienttextskip}{.5cm}
+\newlength{\ingredientswidth}
+\setlength{\ingredientswidth}{%
+  {\amountwidth + \unitwidth + \descriptionwidth + \ingredienttextskip}%
+}
+
+\newcommand{\renewlengths}[2]{%
+  \setlength{#1}{#2}
+  \setlength{\ingredientswidth}{%
+    {\amountwidth + \unitwidth + \descriptionwidth + \ingredienttextskip}%
+  }
+}
+
+% #1: name
+% #2: number of portions
+% #3: description
+\newenvironment{recipe}[3]{%
+  \stepcounter{recipes}
+  \par\noindent
+  #1
+  \hfill
+    % portion entry with unique identifier=recipe id
+    \TextField%
+    [name={\therecipes},%
+    default=#2,%
+    align=2,bordercolor={0 0 0}, maxlen=5, width=5em,%
+    validate={calculate_values(\therecipes,#2);}
+    ]{}
+    Portionen%
+    \\\rule[0.5\baselineskip]{\textwidth}{1.5pt}\\[-.5\baselineskip]
+    \hspace*{\fill}Arbeitszeit: #3
+    \par
+}{%
+}
+
+\newcommand{\curstepdescription}{}
+
+\newenvironment{step}[1]{%
+  \stepcounter{step}
+  \par
+  \vspace{.3\baselineskip}
+  \noindent
+  \renewcommand{\curstepdescription}{%
+    \parbox[t]{{\textwidth-\ingredientswidth}}{#1}%
+  }
+  \minipage[t]{\ingredientswidth}
+  }{
+    \endminipage\curstepdescription
+    \\[.3\baselineskip]
+}
+
+\newcommand{\ingredient}[3]{%
+  \stepcounter{ingredients}
+  % ingredient amount with unique identifier <id>ing<ing-no.>
+  \raisebox{-2pt}{\TextField[%
+  value=#1,%
+  name={\therecipes ing\theingredients},%
+  readonly=true,%
+  borderwidth=0pt,bordercolor={1 1 1},maxlen=4, width=\amountwidth, align=2 %
+  ]{}}
+  \parbox[t]{\unitwidth}{#2}%
+\parbox[t]{\descriptionwidth}{\raggedright#3}
+\par
+}
