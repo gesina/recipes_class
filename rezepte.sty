@@ -169,28 +169,37 @@
 
 \newenvironment{step}[1]{%
   \stepcounter{step}
-  \par
-  \vspace{.3\baselineskip}
-  \noindent
+  % reset the ingredients
+  \let\@firstingredientset\relax
+  % set description of step
   \renewcommand{\curstepdescription}{%
     \parbox[t]{{\textwidth-\ingredientswidth}}{#1}%
   }
+  \par
+  \noindent
+  \minipage[t]{\linewidth}
   \minipage[t]{\ingredientswidth}
   }{
     \endminipage\curstepdescription
-    \\[.3\baselineskip]
+    \endminipage
+    \\\par
 }
 
 \newcommand{\ingredient}[3]{%
   \stepcounter{ingredients}
+  \expandafter\ifx\csname @firstingredientset\endcsname\relax%
+  \def\@firstingredientset{%
+      There is one or more ingredient in this step.%
+    }%
+  \else\newline%
+  \fi
   % ingredient amount with unique identifier <id>ing<ing-no.>
   \raisebox{-2pt}{\TextField[%
-  value=#1,%
-  name={\therecipes ing\theingredients},%
-  readonly=true,%
-  borderwidth=0pt,bordercolor={1 1 1},maxlen=4, width=\amountwidth, align=2 %
-  ]{}}
-  \parbox[t]{\unitwidth}{#2}%
-\parbox[t]{\descriptionwidth}{\raggedright#3}
-\par
+    value=#1,%
+    name={\therecipes ing\theingredients},%
+    readonly=true,%
+    borderwidth=0pt,bordercolor={1 1 1},maxlen=4, width=\amountwidth, align=2 %
+    ]{}}%
+  \parbox[t]{.7\unitwidth}{#2}%
+  \parbox[t]{.7\descriptionwidth}{\raggedright#3}
 }
