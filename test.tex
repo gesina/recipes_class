@@ -10,74 +10,139 @@
 
 \maketitle
 
-Ein wenig text.\par
-\noindent Und noch ein wenig.
-\par\par
-Und noch mehr.
- 
-\noindent
-\begin{minipage}{\linewidth}{\rule{.9\linewidth}{3pt}}
-\end{minipage}
-\par\par
-\noindent
-\begin{minipage}{\linewidth}{\rule{.9\linewidth}{3pt}}
-\end{minipage}
-
-
-\let\something\relax
-\expandafter\ifx\csname something\endcsname\relax Wahr \else Falsch \fi
-
-
 \begin{recipe}{Name of recipe}{3}{4min}
-\begin{step}{do something with these many blubbs. e.g. boil them ...}
-\ingredient{2}{EL}{Blubbl}
-\ingredient{3}{TL}{Blubbl}
-\ingredient{4}{Stk.}{Blubbl}
-\ingredient{5}{g}{Eine wirklich lange Zutat}
-\ingredient{6}{cup}{Blubbl}
-\ingredient{1.500}{etwas}{Blubbl}
-\end{step}
-Blubbl blabbl kommentar. GAAAAAAANz viel wirklich sinnloser Kommentar.\par
-Nur um einen wirklich, wirklich langen, sinnlosen Kommentar zu haben.
-\begin{step}{and some other step you have to take in order to get
-    something to eat ...}
-  \ingredient{2}{EL}{Blubbl}
-  \ingredient{3}{TL}{Blubbl}
-  \ingredient{4}{Stk.}{Blubbl}
-\end{step}
-\begin{step}{do something with these many blubbs. e.g. boil them ...}
-\ingredient{2}{EL}{Blubbl}
-\ingredient{3}{TL}{Blubbl}
-\ingredient{4}{Stk.}{Blubbl}
-\ingredient{5}{g}{Eine wirklich lange Zutat}
-\ingredient{6}{cup}{Blubbl}
-\ingredient{1.500}{etwas}{Blubbl}
-\end{step}
-\begin{step}{and some other step you have to take in order to get
-    something to eat ...}
-  \ingredient{2}{EL}{Blubbl}
-  \ingredient{3}{TL}{Blubbl}
-  \ingredient{4}{Stk.}{Blubbl}
-\end{step}
+  % \ingredient{2}{EL}{Blubbl}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    Some comment on the ingredients.
+    \ingredient{3}[TL]{Blubbl}
+    \Ingredient{Only some lonely ingredient without amount or unit.}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}[g]{Eine wirklich lange Zutat: da da da da da da da}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  Blubbl blabbl kommentar. GAAAAAAANz viel wirklich sinnloser Kommentar.\par
+  Nur um einen wirklich, wirklich langen, sinnlosen Kommentar zu haben.
+  \begin{step}{and some other step you have to take in order to get
+      something to eat ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}[TL]{Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}[TL]{Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}[g]{Eine wirklich lange Zutat: da da da da da da da}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{and some other step you have to take in order to get
+      something to eat ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}[TL]{Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+  \end{step}
 \end{recipe}
 
 
 \begin{recipe}{Name of recipe}{3}{4min}
-\begin{step}{do something with these many blubbs. e.g. boil them ...}
-\ingredient{2}{EL}{Blubbl}
-\ingredient{3}{TL}{Blubbl}
-\ingredient{4}{Stk.}{Blubbl}
-\ingredient{5}{g}{Blubbl}
-\ingredient{6}{cup}{Blubbl}
-\ingredient{1.500}{etwas}{Blubbl}
-\end{step}
-Blubbl blabbl kommentar
-\begin{step}{and some other step you have to take in order to get
-    something to eat ...}
-  \ingredient{2}{EL}{Blubbl}
-  \ingredient{3}{TL}{Blubbl}
-  \ingredient{4}{Stk.}{Blubbl}
-\end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  Blubbl blabbl kommentar
+  \begin{step}{and some other step you have to take in order to get
+      something to eat ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}[TL]{Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
+  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+    \ingredient{2}[EL]{Blubbl}
+    \ingredient{3}{normale Blubbl}
+    \ingredient{4}[Stk.]{Blubbl}
+    \ingredient{5}{Something without unit}
+    \ingredient{6}[cup]{Blubbl}
+    \ingredient{1.500}[etwas]{Blubbl}
+  \end{step}
 \end{recipe}
 
 % Department: \ChoiceMenu[name=abt, default=v,combo=true]{}{%

@@ -20,6 +20,7 @@
 \RequirePackage[pdftex]{insdljs}  % inline javascript with \begin{insDLJS}
 \RequirePackage{ifthen}
 \RequirePackage{calc}
+\RequirePackage{xparse}
 
 % javascript definitions
 \begin{insDLJS}{jsfile}{Outsourced Javascript}
@@ -112,7 +113,7 @@
 
 
 \AtBeginDocument{\begin{Form}}
-\AtEndDocument{\end{Form}}
+  \AtEndDocument{\end{Form}}
 
 % counter
 \newcounter{recipes}
@@ -129,8 +130,16 @@
 \setlength{\unitwidth}{1cm}
 \newlength{\descriptionwidth}
 \setlength{\descriptionwidth}{2.5cm}
+
+\newlength{\textfieldframewidth}
+\setlength{\textfieldframewidth}{1bp}
 \newlength{\ingredienttextskip}
-\setlength{\ingredienttextskip}{.5cm}
+\setlength{\ingredienttextskip}{{\textfieldframewidth+2mm}}
+\newlength{\ingredientdescriptionskip}
+\setlength{\ingredientdescriptionskip}{1ex}
+\newlength{\ingredientlineheight}
+% \setlength{\ingredientlineheight}{\lineheight}
+
 \newlength{\ingredientswidth}
 \setlength{\ingredientswidth}{%
   {\amountwidth + \unitwidth + \descriptionwidth + \ingredienttextskip}%
@@ -143,6 +152,7 @@
   }
 }
 
+
 % #1: name
 % #2: number of portions
 % #3: description
@@ -151,55 +161,114 @@
   \par\noindent
   #1
   \hfill
-    % portion entry with unique identifier=recipe id
-    \TextField%
-    [name={\therecipes},%
-    default=#2,%
-    align=2,bordercolor={0 0 0}, maxlen=5, width=5em,%
-    validate={calculate_values(\therecipes,#2);}
-    ]{}
-    Portionen%
-    \\\rule[0.5\baselineskip]{\textwidth}{1.5pt}\\[-.5\baselineskip]
-    \hspace*{\fill}Arbeitszeit: #3
-    \par
+  % portion entry with unique identifier=recipe id
+  \TextField%
+  [name={\therecipes},%
+  default=#2,%
+  align=2,bordercolor={0 0 0}, maxlen=5, width=5em,%
+  validate={calculate_values(\therecipes,#2);}
+  ]{}
+  Portionen%
+  \\\rule[0.5\baselineskip]{\textwidth}{1.5pt}\\[-.5\baselineskip]
+  \hspace*{\fill}Arbeitszeit: #3
+  \par
 }{%
+  \par
 }
 
+
+% temporal storage of step description
 \newcommand{\curstepdescription}{}
 
+% #1: step description
 \newenvironment{step}[1]{%
   \stepcounter{step}
   % reset the ingredients
   \let\@firstingredientset\relax
+  % set marker that within step env
+  \def\@instep{You are inside a step environment.}
   % set description of step
   \renewcommand{\curstepdescription}{%
-    \parbox[t]{{\textwidth-\ingredientswidth}}{#1}%
+    \parbox[t]{{\textwidth-\ingredientswidth-\ingredientdescriptionskip}}{#1}%
   }
   \par
   \noindent
   \minipage[t]{\linewidth}
   \minipage[t]{\ingredientswidth}
-  }{
-    \endminipage\curstepdescription
-    \endminipage
-    \\\par
+}{
+  \endminipage\hspace*{\ingredientdescriptionskip}%
+  \curstepdescription
+  \endminipage
+  \let\@instep\relax
+  \\\par
 }
 
-\newcommand{\ingredient}[3]{%
+
+% #1: amount
+% [#2: unit]
+% #3: description
+\NewDocumentCommand\ingredient{mO{\parbox[t]{\unitwidth}{ }}m}{%
   \stepcounter{ingredients}
+  % newline if not first in step
   \expandafter\ifx\csname @firstingredientset\endcsname\relax%
   \def\@firstingredientset{%
-      There is one or more ingredient in this step.%
-    }%
-  \else\newline%
+    There is one or more ingredient in this step.%
+  }%
+  \else\\
   \fi
-  % ingredient amount with unique identifier <id>ing<ing-no.>
-  \raisebox{-2pt}{\TextField[%
-    value=#1,%
-    name={\therecipes ing\theingredients},%
-    readonly=true,%
-    borderwidth=0pt,bordercolor={1 1 1},maxlen=4, width=\amountwidth, align=2 %
-    ]{}}%
-  \parbox[t]{.7\unitwidth}{#2}%
-  \parbox[t]{.7\descriptionwidth}{\raggedright#3}
-}
+  % 
+  % check, whether in step
+  \expandafter\ifx\csname @instep\endcsname\relax%
+  \PackageError{recipes}%
+  {\protect\ingredient\space used outside step environment!}%
+  {%
+    You can only insert an \protect\ingredient within a step environment.
+    Maybe you forgot a \protect\begin{step}%
+    }
+    \else%
+    \fi
+    % ingredient amount with unique identifier/id
+    \raisebox{-2\textfieldframewidth}[{1eM + \textfieldframewidth}][\textfieldframewidth]{%
+      \parbox[t]{{\amountwidth + \textfieldframewidth}}{%
+        \TextField[%
+        value=#1,%
+        name={\therecipes ing\theingredients},%
+        readonly=true,%
+        borderwidth=0pt,bordercolor={1 1 1},%
+        maxlen=5, width=\amountwidth, align=2 %
+        ]{}%
+      }}%
+    \parbox[t]{\unitwidth}{#2}%
+    \parbox[t]{\descriptionwidth}{\raggedright#3}
+  }
+
+
+% #1: description
+\newcommand{\Ingredient}[1]{%
+  \stepcounter{ingredients}
+  % newline if not first in step
+  \expandafter\ifx\csname @firstingredientset\endcsname\relax%
+  \def\@firstingredientset{%
+    There is one or more ingredient in this step.%
+  }%
+  \else\\
+  \fi
+  % 
+  % check, whether in step
+  \expandafter\ifx\csname @instep\endcsname\relax%
+  \PackageError{recipes}%
+  {\protect\Ingredient\space used outside step environment!}%
+  {%
+    You can only insert an \protect\Ingredient within a step environment.
+    Maybe you forgot a \protect\begin{step}%
+    }
+    \else%
+    \fi
+    % Ingredient description with spacing
+    \raisebox{-2\textfieldframewidth}%
+    [{1eM + \textfieldframewidth}][\textfieldframewidth]%
+    {\parbox[t]{{\amountwidth + \textfieldframewidth}}{~}}%
+    \parbox[t]{\unitwidth}{~}%
+    \parbox[t]{\descriptionwidth}{\raggedright#1}
+  }
+  
