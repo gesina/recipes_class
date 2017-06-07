@@ -1,6 +1,6 @@
-\documentclass[ngerman,parskip=full]{article}
+\documentclass[ngerman,parskip=full]{scrartcl}
 
-\usepackage{rezepte}
+\usepackage{recipes}
 
 
 \title{Kochbuch}
@@ -10,8 +10,8 @@
 
 \maketitle
 
-\begin{recipe}{Name of recipe}{3}{4min}
-  % \ingredient{2}{EL}{Blubbl}
+\begin{recipe}{Name of recipe}{3}[portions]{4min}
+  Hier mal irgendeine Rezeptbeschreibung ...
   \begin{step}{do something with these many blubbs. e.g. boil them ...}
     \ingredient{2}[EL]{Blubbl}
     Some comment on the ingredients.
@@ -19,11 +19,26 @@
     \Ingredient{Only some lonely ingredient without amount or unit.}
     \ingredient{4}[Stk.]{Blubbl}
     \ingredient{5}[g]{Eine wirklich lange Zutat: da da da da da da da}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
+    \ingredient{6}[cup]{Blubbl}%
   \end{step}
-  Blubbl blabbl kommentar. GAAAAAAANz viel wirklich sinnloser Kommentar.\par
-  Nur um einen wirklich, wirklich langen, sinnlosen Kommentar zu haben.
+  \begin{step}{One step in which we play a little with the lengths.}
+    \Ingredient{Just some ingredient with default dimensions.}
+    \renewlength{descriptionwidth}{5cm}%
+    \ingredient{5}[g]{Und hier noch eine wirklich lange Zutat, aber
+      diesmal mit 5cm description length.}
+    \renewlength{descriptionwidth}{7cm}%
+    \ingredient{5}[g]{Und hier noch eine wirklich lange Zutat, aber
+      diesmal mit 7cm description length.}
+    \resetlengths%
+    \ingredient{5}[g]{Und hier wieder eine normal lange Zutat mit
+      Defaultbreite.}
+    \renewlength{unitwidth}{3cm}
+    \ingredient{1.500}[\centering KILO]{3cm wide unit}
+  \end{step}
+  Blubbl blabbl kommentar. GAAAAAAANz viel wirklich sinnloser
+  Kommentar. Wirklich sinnlos.\par
+  Nur um einen wirklich, wirklich langen, sinnlosen Kommentar zu
+  haben.
   \begin{step}{and some other step you have to take in order to get
       something to eat ...}
     \ingredient{2}[EL]{Blubbl}
@@ -47,8 +62,10 @@
 \end{recipe}
 
 
-\begin{recipe}{Name of recipe}{3}{4min}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
+\bigskip
+\begin{recipe}{Name of recipe}{3}[pieces]{4min}
+  \begin{step}{do something with these many blubbs. e.g. boil them a
+      little more ...}
     \ingredient{2}[EL]{Blubbl}
     \ingredient{3}{normale Blubbl}
     \ingredient{4}[Stk.]{Blubbl}
@@ -56,10 +73,15 @@
     \ingredient{6}[cup]{Blubbl}
     \ingredient{1.500}[etwas]{Blubbl}
   \end{step}
-  Blubbl blabbl kommentar
+  Blubbl blabbl kommentar irgendwo mittendrin. Diesmal aber mehrzeilig
+  und ohne Absatz dazwischen.
+  Danach ist der skip zwischen Zutaten und Schrittbeschreibung 2cm groß.
+  \setlength{\ingredientdescriptionskip}{2cm}
   \begin{step}{and some other step you have to take in order to get
       something to eat ...}
     \ingredient{2}[EL]{Blubbl}
+    Beachte die 2cm zwischen dieser Ingredientsbox und der
+    Schrittbeschreibung für das restliche Rezept!
     \ingredient{3}[TL]{Blubbl}
     \ingredient{4}[Stk.]{Blubbl}
   \end{step}
@@ -79,77 +101,15 @@
     \ingredient{6}[cup]{Blubbl}
     \ingredient{1.500}[etwas]{Blubbl}
   \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
-  \begin{step}{do something with these many blubbs. e.g. boil them ...}
-    \ingredient{2}[EL]{Blubbl}
-    \ingredient{3}{normale Blubbl}
-    \ingredient{4}[Stk.]{Blubbl}
-    \ingredient{5}{Something without unit}
-    \ingredient{6}[cup]{Blubbl}
-    \ingredient{1.500}[etwas]{Blubbl}
-  \end{step}
 \end{recipe}
 
-% Department: \ChoiceMenu[name=abt, default=v,combo=true]{}{%
-% Sales=v,Production=f,Service=s}\\
-
-% \CheckBox[name=e2,width=1.2em,%
-% bordercolor={0.65 0.79 0.94},combo=true]{}\\
+\clearpage
+Hier ist ein Schritt außerhalb einer recipe-Umgebung
+(möglich, aber unsinnig, da nicht dynamisch und unübersichtlich)
+\begin{step}{Irgendein Schritt}
+  \ingredient{1}{blubbl}
+  \ingredient{1.5}[g]{anderer blubbl}
+\end{step}
 
 
 \end{document}

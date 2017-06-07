@@ -1,13 +1,53 @@
-% This is a simple class for notation of recipes
+% %%%%%%%%%%%%%%%%%%%%%%%%
+% PACKAGE recipes
 % 
+% This is a simple package to notate recipes
+% and calculate different amounts of ingredients
+% in accordance to the number of portions.
+%
 % by Gesina Schwalbe
 % 
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% !!! Dynamic properties are by the time !!!
+% !!! only available in                  !!!
+% !!!  - Browsers (tested with Chromium) !!!
+% !!!  - Acrobat Reader                  !!!
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+%
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% !! Be aware that you need        !!
+% !! the package insdljs           !!
+% !! out of the acrotex collection !!
+% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+% 
+% This package provides commands 
+% to start a recipe block,
+% specify steps to do and 
+% annotate the needed ingredients, namely:
+% - environment recipe
+% - environment step (to be used within recipe env)
+% - command \ingredient (to be used within step env)
+% - command \Ingredient (to be used within step env)
+% 
+% Comments are better only inserted between steps,
+% not between ingredients (though possible).
+% 
+% To change block lengths locally, please use
+% \renewlength{<lengthname>}{<dimension>}
+% Available legth names are:
+% - amountwidth
+% - unitwidth
+% - descriptionwidth
+% - ingredienttextskip
+% You can reset to default with \resetlengths.
+%
+%
 % written with LaTeX2e
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{rezepte}[2015/04/02 This is an assistant for recipes]
+\ProvidesPackage{recipes}[2015/04/02 This is an assistant for recipes]
 
 % Warning concerning chosen class
 \ifx\KOMAscript\relax \PackageWarning{rezepte}{There is no guarantee,
@@ -118,45 +158,83 @@
 % counter
 \newcounter{recipes}
 \setcounter{recipes}{0}
-\newcounter{ingredients}[recipes]
-\setcounter{ingredients}{0}
+% only calculatable ingredients
+\newcounter{@ingredients}[recipes]
+\setcounter{@ingredients}{0}
+% total amount of ingredients
+\newcounter{Ingredients}[recipes]
+\setcounter{Ingredients}{0}
+% total amount of steps
 \newcounter{step}
 \setcounter{step}{0}
 
 % lengths
-\newlength{\amountwidth}
-\setlength{\amountwidth}{1cm}
-\newlength{\unitwidth}
-\setlength{\unitwidth}{1cm}
-\newlength{\descriptionwidth}
-\setlength{\descriptionwidth}{2.5cm}
+\newlength{\@amountwidth}
+\setlength{\@amountwidth}{1cm}
+\newlength{\@unitwidth}
+\setlength{\@unitwidth}{1cm}
+\newlength{\@descriptionwidth}
+\setlength{\@descriptionwidth}{2.5cm}
 
-\newlength{\textfieldframewidth}
-\setlength{\textfieldframewidth}{1bp}
-\newlength{\ingredienttextskip}
-\setlength{\ingredienttextskip}{{\textfieldframewidth+2mm}}
+% workaround for ugly TextField frames
+\newlength{\@textfieldframewidth}
+\setlength{\@textfieldframewidth}{1bp}
+\newlength{\@ingredienttextskip}
+\setlength{\@ingredienttextskip}{{\@textfieldframewidth+3mm}}
 \newlength{\ingredientdescriptionskip}
 \setlength{\ingredientdescriptionskip}{1ex}
-\newlength{\ingredientlineheight}
-% \setlength{\ingredientlineheight}{\lineheight}
 
-\newlength{\ingredientswidth}
-\setlength{\ingredientswidth}{%
-  {\amountwidth + \unitwidth + \descriptionwidth + \ingredienttextskip}%
+\newlength{\@ingredientswidth}
+\setlength{\@ingredientswidth}{%
+  {\@amountwidth + \@unitwidth + \@descriptionwidth + \@ingredienttextskip}%
 }
 
-\newcommand{\renewlengths}[2]{%
-  \setlength{#1}{#2}
-  \setlength{\ingredientswidth}{%
-    {\amountwidth + \unitwidth + \descriptionwidth + \ingredienttextskip}%
-  }
+\newcommand{\resetlengths}{%
+  \setlength{\@amountwidth}{6ex}%
+  \setlength{\@unitwidth}{1cm}%
+  \setlength{\@descriptionwidth}{2.5cm}%
+  \setlength{\@textfieldframewidth}{1bp}%
+  \setlength{\@ingredienttextskip}{{\@textfieldframewidth+3mm}}%
+  \setlength{\ingredientdescriptionskip}{1ex}%
+  \setlength{\@ingredientswidth}{%
+    {\@amountwidth + \@unitwidth + \@descriptionwidth + \@ingredienttextskip}%
+  }%
+}
+\resetlengths
+
+% #1: length name
+% #2: dimension
+% Available length names:
+% - amountwidth
+% - unitwidth
+% - descriptionwidth
+% - ingredienttextskip
+\newcommand{\renewlength}[2]{%
+\expandafter\ifx\csname @#1\endcsname\relax%
+\PackageError{recipes}%
+{Unknown length name!}%
+{%
+  #1 is no known length. Probably you missspelled it.
+  The following length names are available:\MessageBreak
+  amountwidth\MessageBreak
+  unitwidth\MessageBreak
+  descriptionwidth\MessageBreak
+  ingredienttextskip
+}%
+  \else%
+  \setlength{\csname @#1\endcsname}{#2}%
+  \setlength{\@ingredientswidth}{%
+  {\@amountwidth + \@unitwidth + \@descriptionwidth + \@ingredienttextskip}%
+}%
+  \fi%
 }
 
 
-% #1: name
-% #2: number of portions
-% #3: description
-\newenvironment{recipe}[3]{%
+%   #1: name
+%   #2: number of portions
+%  (#3: what portions, e.g. pieces)
+%   #4: working time
+\NewDocumentCommand\@beginrecipe{mmO{Portionen}m}{%
   \stepcounter{recipes}
   \par\noindent
   #1
@@ -166,14 +244,21 @@
   [name={\therecipes},%
   default=#2,%
   align=2,bordercolor={0 0 0}, maxlen=5, width=5em,%
+  charsize=\f@size pt,%
   validate={calculate_values(\therecipes,#2);}
   ]{}
-  Portionen%
+  #3%
   \\\rule[0.5\baselineskip]{\textwidth}{1.5pt}\\[-.5\baselineskip]
-  \hspace*{\fill}Arbeitszeit: #3
+  \parbox{\textwidth}{\raggedleft Arbeitszeit: #4}%
   \par
+}
+
+
+% actual environment (same arguments as above)
+\NewDocumentEnvironment{recipe}{mmO{Portionen}m}{%
+  \@beginrecipe{#1}{#2}[#3]{#4}%
 }{%
-  \par
+    \par%\endrecipe%
 }
 
 
@@ -189,15 +274,14 @@
   \def\@instep{You are inside a step environment.}
   % set description of step
   \renewcommand{\curstepdescription}{%
-    \parbox[t]{{\textwidth-\ingredientswidth-\ingredientdescriptionskip}}{#1}%
+    \parbox[t]{{\textwidth-\@ingredientswidth-\ingredientdescriptionskip}}{#1}%
   }
   \par
   \noindent
   \minipage[t]{\linewidth}
-  \minipage[t]{\ingredientswidth}
+  \minipage[t]{\@ingredientswidth}
 }{
-  \endminipage\hspace*{\ingredientdescriptionskip}%
-  \curstepdescription
+  \endminipage\hfill\curstepdescription
   \endminipage
   \let\@instep\relax
   \\\par
@@ -207,8 +291,9 @@
 % #1: amount
 % [#2: unit]
 % #3: description
-\NewDocumentCommand\ingredient{mO{\parbox[t]{\unitwidth}{ }}m}{%
-  \stepcounter{ingredients}
+\NewDocumentCommand\ingredient{mO{\parbox[t]{\@unitwidth}{ }}m}{%
+  \stepcounter{@ingredients}
+  \stepcounter{Ingredients}
   % newline if not first in step
   \expandafter\ifx\csname @firstingredientset\endcsname\relax%
   \def\@firstingredientset{%
@@ -224,28 +309,30 @@
   {%
     You can only insert an \protect\ingredient within a step environment.
     Maybe you forgot a \protect\begin{step}%
-    }
-    \else%
-    \fi
-    % ingredient amount with unique identifier/id
-    \raisebox{-2\textfieldframewidth}[{1eM + \textfieldframewidth}][\textfieldframewidth]{%
-      \parbox[t]{{\amountwidth + \textfieldframewidth}}{%
-        \TextField[%
-        value=#1,%
-        name={\therecipes ing\theingredients},%
-        readonly=true,%
-        borderwidth=0pt,bordercolor={1 1 1},%
-        maxlen=5, width=\amountwidth, align=2 %
-        ]{}%
-      }}%
-    \parbox[t]{\unitwidth}{#2}%
-    \parbox[t]{\descriptionwidth}{\raggedright#3}
   }
+  \else%
+  \fi
+  % ingredient amount with unique identifier/id
+  \raisebox{-2\@textfieldframewidth}%
+  [{1eM + \@textfieldframewidth}][\@textfieldframewidth]{%
+    \parbox[t]{{\@amountwidth + \@textfieldframewidth}}{%
+      \TextField[%
+      value=#1,%
+      name={\therecipes ing\the@ingredients},%
+      readonly=true,%
+      borderwidth=0pt,bordercolor={1 1 1},%
+      maxlen=5, width=\@amountwidth, align=2, %
+      charsize=\f@size pt%
+      ]{}%
+    }}%
+  \parbox[t]{\@unitwidth}{#2}%
+  \parbox[t]{\@descriptionwidth}{\raggedright#3}
+}
 
 
 % #1: description
 \newcommand{\Ingredient}[1]{%
-  \stepcounter{ingredients}
+  \stepcounter{Ingredients}
   % newline if not first in step
   \expandafter\ifx\csname @firstingredientset\endcsname\relax%
   \def\@firstingredientset{%
@@ -265,10 +352,9 @@
     \else%
     \fi
     % Ingredient description with spacing
-    \raisebox{-2\textfieldframewidth}%
-    [{1eM + \textfieldframewidth}][\textfieldframewidth]%
-    {\parbox[t]{{\amountwidth + \textfieldframewidth}}{~}}%
-    \parbox[t]{\unitwidth}{~}%
-    \parbox[t]{\descriptionwidth}{\raggedright#1}
+    \raisebox{-2\@textfieldframewidth}%
+    [{1eM + \@textfieldframewidth}][\@textfieldframewidth]%
+    {\parbox[t]{{\@amountwidth + \@textfieldframewidth}}{~}}%
+    \parbox[t]{\@unitwidth}{~}%
+    \parbox[t]{\@descriptionwidth}{\raggedright#1}
   }
-  
