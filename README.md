@@ -1,6 +1,10 @@
 # Dynamik Recipe LaTeX-Class
 `recipes.sty` is a LaTeX2e-class for typesetting recipes with dynamik
 calculation of the needed amount based on the coded proportions.
+It was a project during the advanced course on LaTeX at the university
+of Regensburg in 2015.
+The logic is based on javascript inside the PDF-document.
+
 In practice: One easily typesets the recipe with proportions as found
 (e.g. on the internet) with the help of the given commands. This then
 will compile to a form which accepts any other number of portions and
